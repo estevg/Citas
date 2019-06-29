@@ -1,5 +1,12 @@
 import React, { useState, useEffect, Fragment } from 'react';
 
+
+function Error({mensaje}){
+  return (
+    <h1>{mensaje}</h1>
+  )
+}
+
 function Cita({cita, index, eliminarCita}) {
 
  
@@ -119,6 +126,8 @@ function App(){
   if(!citasIniciales) {
     citasIniciales = [];
   }
+
+  const [ error, guardarError ] = useState(false);
   // useStateretorna 2 Funcioanes
   // EL state actual = this.state
   // Función que actualiza el state this.setState();
@@ -126,11 +135,17 @@ function App(){
 
   // Agregar las nuevas citas al state
   const crearCita = cita => {
+
+    if(cita.mascota === '' || citas.propietario === '' || citas.fecha === '' || citas.hora === '' || citas.sintomas === ''){
+      guardarError(true)
+      return;
+    }
     // Tomar una copia del state y agregar el nuevo clinete
     const nuevasCitas = [...citas, cita]
     // console.log(nuevasCitas)
     // Almacenando en el state principal
     guardarCita(nuevasCitas);
+    guardarError(false)
   }
 
   // Liminar las citas del State
@@ -155,6 +170,21 @@ function App(){
   // Cargar condicionalmente un titulo
 
   const titulo = Object.keys(citas).length === 0 ? 'No hay citas' : 'Administrar las Citas Aqui';
+  
+  let componente;
+  if(error){
+    componente = <Error mensaje='Ambos campos son obligatorios' />
+  } else {
+    componente = citas.map((cita, index) => (
+      <Cita 
+        key={index}
+        index={index}
+        cita={cita}
+        eliminarCita={eliminarCita}
+      />
+    ))
+  }
+
 
   return (
 
@@ -169,14 +199,7 @@ function App(){
                 </div>
                 <div className="one-half column">
                   <h2>{titulo} </h2>
-                  {citas.map((cita, index) => (
-                    <Cita 
-                      key={index}
-                      index={index}
-                      cita={cita}
-                      eliminarCita={eliminarCita}
-                    />
-                  ))}
+                  {componente}
                 </div>
               </div>
           </div>
